@@ -240,88 +240,28 @@ export default function HomePage() {
     setInterviewExpired(false);
   }
 
-  const currentQuestionPanel = currentQuestion ? (
-    <section className="border-b border-slate-200/80 bg-slate-50/80 px-5 py-4 sm:px-7">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-        <div className="space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-teal-700">
-            Current Question
-          </p>
-          <h2 className="text-xl font-semibold text-slate-950">
-            {currentQuestion.title}
-          </h2>
-          <p className="max-w-3xl text-sm leading-7 text-slate-600">
-            {currentQuestion.description}
-          </p>
-        </div>
-
-        <div className="flex flex-wrap gap-2 text-sm">
-          <span className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-slate-700">
-            {mode === "mockInterview" ? "Mock Interview" : "Practice"}
-          </span>
-          <span className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-slate-700">
-            {selectedTopic || currentQuestion.topic}
-          </span>
-          <span className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-slate-700">
-            {currentQuestion.difficulty}
-          </span>
-          {timeRemaining !== null ? (
-            <span
-              className={[
-                "rounded-full border px-3 py-1.5",
-                timeRemaining <= MOCK_INTERVIEW_WARNING_SECONDS
-                  ? "border-amber-300 bg-amber-50 text-amber-900"
-                  : "border-slate-200 bg-white text-slate-700"
-              ].join(" ")}
-            >
-              {formatRemainingTime(timeRemaining)}
-            </span>
-          ) : null}
-        </div>
-      </div>
-    </section>
-  ) : null;
-
   const emptyState = (
-    <section className="grid flex-1 gap-10 px-8 py-10 lg:grid-cols-[1.3fr_0.9fr]">
-      <div className="space-y-10">
-        <div className="space-y-6">
-          <div className="inline-flex rounded-full border border-cyan-200 bg-cyan-50 px-6 py-3 text-xs font-semibold uppercase tracking-[0.34em] text-cyan-700">
-            Welcome Screen
-          </div>
-          <h2 className="text-5xl font-semibold tracking-tight text-slate-950 sm:text-6xl">
-            DSA Interview Coach
-          </h2>
-          <p className="max-w-4xl text-xl leading-10 text-slate-600">
-            Practice Data Structures and Algorithms interviews with an AI interviewer
-            trained on Striver SDE Sheet questions.
-          </p>
-        </div>
-
-        <div className="max-w-5xl">
-          <SuggestionButtons onSelect={handleSuggestion} disabled={isLoading} />
-        </div>
+    <section className="flex flex-1 items-center justify-center px-6 py-12">
+      <div className="flex w-full max-w-3xl flex-col items-center gap-6 text-center">
+        <h2 className="text-[2rem] font-medium tracking-[-0.05em] text-slate-900">
+          DSA Interview Coach
+        </h2>
+        <p className="max-w-2xl text-[0.96rem] leading-8 text-slate-500">
+          Practice Data Structures and Algorithms interviews with an AI interviewer
+          trained on Striver SDE Sheet questions.
+        </p>
+        <SuggestionButtons onSelect={handleSuggestion} disabled={isLoading} />
       </div>
-
-      <aside className="rounded-[32px] border border-slate-200 bg-slate-50 px-8 py-10">
-        <h3 className="text-2xl font-semibold text-slate-900">What this coach does</h3>
-        <div className="mt-10 space-y-8 text-lg leading-9 text-slate-600">
-          <p>Runs topic-based mock interviews across Arrays, Trees, Graphs, DP, and more.</p>
-          <p>Asks follow-up questions like a real interviewer instead of dumping a solution.</p>
-          <p>Gives hints when you get stuck.</p>
-          <p>Works as a clean full-stack app ready for Vercel deployment.</p>
-        </div>
-      </aside>
     </section>
   );
 
   const chatView = (
-    <section className="flex flex-1 flex-col overflow-hidden bg-slate-50/60">
+    <section className="flex flex-1 flex-col overflow-hidden bg-white">
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto px-8 py-8 scroll-smooth"
+        className="flex-1 overflow-y-auto px-4 py-8 scroll-smooth sm:px-6"
       >
-        <div className="mx-auto max-w-4xl space-y-5">
+        <div className="mx-auto max-w-3xl space-y-6">
           {messages.map((message) => (
             <ChatMessage
               key={message.id}
@@ -340,27 +280,30 @@ export default function HomePage() {
 
   return (
     <main>
-      <div className="mx-auto flex min-h-screen max-w-7xl flex-col px-4 py-6 sm:px-6 lg:px-8">
-        <div className="flex min-h-[calc(100vh-3rem)] flex-col overflow-hidden rounded-[38px] border border-slate-200/80 bg-white shadow-panel">
+      <div className="flex min-h-screen flex-col bg-white">
+        <div className="flex min-h-screen flex-col">
           <Header
             onReset={handleReset}
             disabled={isLoading}
+            timer={mode === "mockInterview" && timeRemaining !== null ? formatRemainingTime(timeRemaining) : null}
+            timerWarning={timeRemaining !== null && timeRemaining <= MOCK_INTERVIEW_WARNING_SECONDS}
+            showReset={messages.length > 0}
           />
 
-          {currentQuestionPanel}
           {messages.length === 0 ? emptyState : chatView}
 
-          <div className="border-t border-slate-200/80 bg-white px-8 py-6">
-            <div className="mx-auto max-w-4xl space-y-4">
-              <SuggestionButtons onSelect={handleSuggestion} disabled={isLoading} compact />
-              <ChatInput
-                value={input}
-                onChange={setInput}
-                onSubmit={() => void sendMessage(input)}
-                disabled={isLoading || interviewExpired}
-              />
+          {messages.length > 0 ? (
+            <div className="sticky bottom-0 border-t border-slate-200/80 bg-white/95 px-4 py-4 backdrop-blur sm:px-6">
+              <div className="mx-auto max-w-2xl">
+                <ChatInput
+                  value={input}
+                  onChange={setInput}
+                  onSubmit={() => void sendMessage(input)}
+                  disabled={isLoading || interviewExpired}
+                />
+              </div>
             </div>
-          </div>
+          ) : null}
         </div>
       </div>
     </main>

@@ -4,6 +4,21 @@ type ChatMessageProps = {
   loading?: boolean;
 };
 
+type ContentSegment =
+  | { type: "text"; value: string }
+  | { type: "code"; value: string };
+
+function parseContent(content: string): ContentSegment[] {
+  const parts = content.split(/```(?:\w+)?\n?/);
+
+  return parts
+    .map((part, index) => ({
+      type: index % 2 === 0 ? "text" : "code",
+      value: part.trim()
+    }))
+    .filter((part) => part.value.length > 0) as ContentSegment[];
+}
+
 export function ChatMessage({
   role,
   content,
@@ -11,24 +26,25 @@ export function ChatMessage({
 }: ChatMessageProps) {
   const isUser = role === "user";
   const isSystem = role === "system";
+  const segments = parseContent(content);
 
   return (
     <div className={`flex w-full ${isUser ? "justify-end" : "justify-start"}`}>
       <div
         className={[
-          "max-w-[88%] rounded-[26px] px-4 py-3 shadow-sm transition-colors sm:max-w-[78%]",
+          "rounded-[24px] px-4 py-3 transition-colors",
           isUser
-            ? "rounded-br-md bg-slate-900 text-white"
+            ? "max-w-[280px] rounded-br-md bg-[#f4f4f7] text-slate-900 sm:max-w-[320px]"
             : isSystem
-              ? "rounded-bl-md border border-amber-200 bg-amber-50 text-amber-900"
-              : "rounded-bl-md border border-slate-200 bg-white text-slate-900"
+              ? "max-w-[82%] rounded-bl-md border border-amber-200 bg-amber-50 text-amber-900 sm:max-w-[72%]"
+              : "max-w-[82%] rounded-bl-md bg-[#f4f4f7] text-slate-900 sm:max-w-[72%]"
         ].join(" ")}
       >
-        <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.22em] opacity-70">
+        <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.18em] opacity-50">
           {isUser ? "You" : isSystem ? "System" : "Coach"}
         </p>
         {loading ? (
-          <div className="flex items-center gap-3 text-sm sm:text-base">
+          <div className="flex items-center gap-3 text-[0.95rem]">
             <div className="flex items-center gap-1.5">
               <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-current [animation-delay:-0.3s]" />
               <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-current [animation-delay:-0.15s]" />
@@ -37,7 +53,25 @@ export function ChatMessage({
             <span>Interviewer is thinking...</span>
           </div>
         ) : (
-          <p className="whitespace-pre-wrap text-sm leading-7 sm:text-base">{content}</p>
+          <div className="space-y-3">
+            {segments.map((segment, index) =>
+              segment.type === "code" ? (
+                <pre
+                  key={`${segment.type}-${index}`}
+                  className="overflow-x-auto rounded-2xl bg-slate-900 px-4 py-3 text-[0.88rem] leading-6 text-slate-100"
+                >
+                  <code>{segment.value}</code>
+                </pre>
+              ) : (
+                <p
+                  key={`${segment.type}-${index}`}
+                  className="whitespace-pre-wrap text-[0.95rem] leading-7"
+                >
+                  {segment.value}
+                </p>
+              )
+            )}
+          </div>
         )}
       </div>
     </div>

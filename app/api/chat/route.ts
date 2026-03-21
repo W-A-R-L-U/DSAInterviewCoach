@@ -92,6 +92,29 @@ Rules:
 - Base your feedback on the user's actual response.
 - Keep the reply concise and interview-focused.
 - Do not skip directly to the solution unless the user explicitly asks for it.
+- Sound like a human interviewer speaking naturally in a live conversation.
+- Do not sound like documentation, lecture notes, or a generated report.
+- Do not use markdown formatting like **bold**, bullet lists, separators, or section headings.
+- Do not paste the full problem statement unless the user explicitly asks for it again.
+- When starting, summarize the problem in 2 to 4 natural sentences, then ask one clear question.
+- Use contractions naturally when appropriate.
+- Keep most replies under 5 sentences.
+- Ask only one follow-up question at a time.
+- Do not mention the official problem title unless the user explicitly asks for it.
+- Present the problem like a real interviewer would, without saying things like "The question is..." or "The problem title is...".
+- If the user asks for an example, give one small concrete example.
+- For examples involving arrays, linked lists, trees, graphs, or grids, format the sample input in a fenced code block.
+- Keep the example brief and explain it in plain English right after the code block.
+- When giving an example, use this structure exactly when possible:
+  Input:
+  \`\`\`txt
+  ...
+  \`\`\`
+  Output:
+  \`\`\`txt
+  ...
+  \`\`\`
+  Then add one short plain-English explanation.
 
 Conversation so far:
 ${conversation || "No previous conversation."}
@@ -107,13 +130,14 @@ Stage guidance:
 ${stageInstructions[interviewState.stage]}
 
 Specific behavior:
-- If intent is "start", clearly present the problem and ask for the candidate's approach.
+- If intent is "start", introduce the problem naturally, briefly summarize it in plain English without naming the problem, and ask how the candidate would approach it.
 - If intent is "hint", do not give the full solution. Give only the next small hint based on hint count.
 - If stage is "approach" and the candidate gave a meaningful approach, ask about time complexity next.
 - If stage is "timeComplexity", ask about space complexity after reacting to the answer.
 - If stage is "spaceComplexity", ask about optimizations after reacting to the answer.
 - If stage is "optimization", give final feedback and mention they can ask for the full solution.
 - If intent is "solution", provide the full solution now.
+- If the latest user message asks for an example, do not give the full solution. Give a short sample input or shape of the data structure first.
 `;
 }
 
@@ -127,10 +151,22 @@ Rules:
 - Answer as a purpose-built DSA interview coach.
 - Keep the response focused on problem solving, hints, patterns, and interview readiness.
 - If asked for solutions, prefer giving guidance or structured hints first.
+- Sound natural and human, not like a generated article.
+- Avoid markdown headings, bullet lists, and overly polished report-style writing unless the user asks for it.
+- If the user asks for an example, give one concise example and use a fenced code block for structured input when helpful.
+- Prefer labeling examples as Input and Output, each followed by a fenced code block.
 
 User message:
 ${message}
 `;
+}
+
+function sanitizeAiReply(reply: string) {
+  return reply
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/^---+$/gm, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
 }
 
 function isHintRequest(message: string) {
@@ -217,7 +253,7 @@ export async function POST(request: Request) {
         : buildNormalChatPrompt(message, selectedTopic);
 
     const result = await model.generateContent(prompt);
-    const aiText = result.response.text();
+    const aiText = sanitizeAiReply(result.response.text());
     const nextInterviewState =
       mode === "mockInterview"
         ? {
