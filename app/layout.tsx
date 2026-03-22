@@ -5,11 +5,11 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "DSA Interview Coach",
   description:
-    "Practice Data Structures and Algorithms interviews with an AI interviewer trained on Striver SDE Sheet questions."
+    "Practice Data Structures and Algorithms interviews with an AI interviewer trained on Striver SDE Sheet questions.",
 };
 
 export default function RootLayout({
-  children
+  children,
 }: Readonly<{
   children: ReactNode;
 }>) {

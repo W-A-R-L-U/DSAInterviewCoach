@@ -34,10 +34,10 @@ export function ChatMessage({
         className={[
           "rounded-[24px] px-4 py-3 transition-colors",
           isUser
-            ? "max-w-[280px] rounded-br-md bg-[#f4f4f7] text-slate-900 sm:max-w-[320px]"
+            ? "max-w-[280px] rounded-br-md bg-white/80 text-slate-900 sm:max-w-[320px]"
             : isSystem
               ? "max-w-[82%] rounded-bl-md border border-amber-200 bg-amber-50 text-amber-900 sm:max-w-[72%]"
-              : "max-w-[82%] rounded-bl-md bg-[#f4f4f7] text-slate-900 sm:max-w-[72%]"
+              : "max-w-[82%] rounded-bl-md bg-white/80 text-slate-900 sm:max-w-[72%]"
         ].join(" ")}
       >
         <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.18em] opacity-50">
@@ -58,7 +58,7 @@ export function ChatMessage({
               segment.type === "code" ? (
                 <pre
                   key={`${segment.type}-${index}`}
-                  className="overflow-x-auto rounded-2xl bg-slate-900 px-4 py-3 text-[0.88rem] leading-6 text-slate-100"
+                  className="overflow-x-auto rounded-2xl bg-[var(--code-bg)] px-4 py-3 text-[0.88rem] leading-6 text-[var(--code-text)]"
                 >
                   <code>{segment.value}</code>
                 </pre>

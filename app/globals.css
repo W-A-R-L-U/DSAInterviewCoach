@@ -4,6 +4,46 @@
 
 :root {
   color-scheme: light;
+
+  /* PAGE BACKGROUND COLORS */
+  /* Main background glow: Indigo 500 (#6366f1) */
+  --page-glow-indigo: rgba(99, 102, 241, 0.14);
+  /* Main background glow: Blue 200 (#bfdbfe) */
+  --page-glow-blue: rgba(191, 219, 254, 0.65);
+  /* Main background glow: Indigo 300 (#a5b4fc) */
+  --page-glow-soft: rgba(165, 180, 252, 0.18);
+  /* Main page background start: Slate 50 (#f8fafc) */
+  --page-bg-start: #f8fafc;
+  /* Main page background middle: Indigo 50 (#eef2ff) */
+  --page-bg-mid: #eef2ff;
+  /* Main page background end: Slate 50 (#f8fafc) */
+  --page-bg-end: #f8fafc;
+
+  /* SHELL / CARD COLORS */
+  /* Landing card border: White 80% */
+  --shell-border: rgba(255, 255, 255, 0.8);
+  /* Landing card background: White 85% */
+  --shell-bg: rgba(255, 255, 255, 0.85);
+
+  /* PRIMARY COMPONENT COLORS */
+  /* Start Mock Interview / Reset Chat / Timer / User bubble / Interviewer bubble: Indigo 600 (#4f46e5) */
+  --color-primary: #4f46e5;
+  /* Hover state for primary components: Indigo 700 (#4338ca) */
+  --color-primary-hover: #4338ca;
+  /* Text on primary components: White (#ffffff) */
+  --color-primary-text: #ffffff;
+
+  /* SURFACE COLORS */
+  /* Header and input section background: White 95% */
+  --surface-bg: rgba(255, 255, 255, 0.95);
+  /* Standard border color: Slate 200 (#e2e8f0) */
+  --surface-border: #e2e8f0;
+
+  /* CODE BLOCK COLORS */
+  /* Code block background: Slate 900 (#0f172a) */
+  --code-bg: #0f172a;
+  /* Code block text: Slate 100 (#f1f5f9) */
+  --code-text: #f1f5f9;
 }
 
 .dark {
@@ -18,9 +58,10 @@ body {
 body {
   @apply bg-slate-100 text-slate-900 antialiased;
   background-image:
-    radial-gradient(circle at top left, rgba(59, 130, 246, 0.08), transparent 26%),
-    radial-gradient(circle at top right, rgba(14, 165, 233, 0.05), transparent 18%),
-    linear-gradient(180deg, #eff6fd 0%, #eef4fb 38%, #f8fafc 100%);
+    radial-gradient(circle at 15% 20%, var(--page-glow-indigo), transparent 24%),
+    radial-gradient(circle at 85% 18%, var(--page-glow-blue), transparent 20%),
+    radial-gradient(circle at 70% 78%, var(--page-glow-soft), transparent 22%),
+    linear-gradient(180deg, var(--page-bg-start) 0%, var(--page-bg-mid) 52%, var(--page-bg-end) 100%);
 }
 
 .dark body {

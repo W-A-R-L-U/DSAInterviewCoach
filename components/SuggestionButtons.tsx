@@ -25,15 +25,15 @@ export function SuggestionButtons({
           onClick={() => onSelect(label)}
           disabled={disabled}
           className={[
-            "overflow-hidden rounded-full border border-slate-300 bg-white text-left font-medium text-slate-700 transition",
+            "overflow-hidden rounded-full text-left font-medium transition",
             compact
-              ? "min-h-[44px] max-w-[190px] px-4 py-2.5 text-[0.88rem] hover:bg-slate-50"
-              : "min-h-[44px] max-w-[190px] px-4 py-2.5 text-[0.9rem] hover:bg-slate-50",
+              ? "border border-slate-300 bg-white max-w-[190px] px-4 py-2.5 text-[0.88rem] text-slate-700 hover:bg-slate-50"
+              : "bg-[var(--color-primary)] px-7 py-3.5 text-[0.96rem] text-[var(--color-primary-text)] shadow-[0_14px_30px_rgba(79,70,229,0.28)] hover:-translate-y-0.5 hover:bg-[var(--color-primary-hover)]",
             "disabled:cursor-not-allowed disabled:opacity-60"
           ].join(" ")}
         >
           <span className="block leading-5">
-            {label}
+            {compact ? label : `Start Mock Interview`}
           </span>
         </button>
       ))}

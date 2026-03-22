@@ -12,7 +12,7 @@ export function ChatInput({
   disabled = false
 }: ChatInputProps) {
   return (
-    <div className="flex items-end gap-3 rounded-[28px] border border-slate-300 bg-white px-4 py-3 shadow-[0_8px_24px_rgba(15,23,42,0.06)] transition focus-within:border-slate-400">
+    <div className="flex items-end gap-3 rounded-[28px] border border-[var(--surface-border)] bg-[var(--surface-bg)] px-4 py-3 shadow-[0_8px_24px_rgba(15,23,42,0.06)] transition focus-within:border-[var(--color-primary)]">
       <textarea
         value={value}
         onChange={(event) => onChange(event.target.value)}
@@ -32,7 +32,7 @@ export function ChatInput({
         type="button"
         onClick={onSubmit}
         disabled={disabled || !value.trim()}
-        className="inline-flex h-10 min-w-[68px] items-center justify-center rounded-full bg-slate-900 px-4 text-[0.9rem] font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-300"
+        className="inline-flex h-10 min-w-[68px] items-center justify-center rounded-full bg-[var(--color-primary)] px-4 text-[0.9rem] font-medium text-[var(--color-primary-text)] transition hover:bg-[var(--color-primary-hover)] disabled:cursor-not-allowed disabled:bg-slate-300"
         aria-label="Send message"
       >
         Send
