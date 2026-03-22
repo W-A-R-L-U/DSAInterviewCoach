@@ -2,17 +2,27 @@
 
 DSA Interview Coach is a full-stack AI chatbot web application for practicing Data Structures and Algorithms interview questions through a mock interview experience. It uses Next.js App Router, TypeScript, Tailwind CSS, and the Gemini API to create a ChatGPT-style interview workflow around Striver SDE Sheet inspired questions.
 
+## Why I Picked This Topic
+
+I chose this topic because I personally faced challenges while preparing for DSA interviews. During my preparation, I realized that having someone available to take mock interviews anytime would have been extremely helpful for practicing how to think aloud, explain approaches, and handle follow-up questions. DSA interview preparation is a common challenge for many students and developers. While most platforms provide lists of problems and solutions, they rarely replicate the experience of a real interview. This project aims to bridge that gap by creating a conversational AI experience where users can practice step by step in an interview-like environment.
+
+## What I Built
+
+- This is a web application, DSA Interview Coach, that simulates real DSA technical interviews.
+- The AI acts as an interviewer, asking problems and adaptive follow-up questions based on the candidate’s responses.
+- Provides progressive hints and guidance to help users think through the problem without directly revealing the solution.
+- Conducts a complete mock interview flow, probing the approach and naturally wrapping up the session like a real interviewer.
+
 ## Features
 
-- ChatGPT-style chat UI with user messages on the right and coach replies on the left
+- ChatGPT-style friendly chat UI
 - Welcome screen with quick-start interview actions
-- Topic-based interview flows for Arrays, Binary Trees, and Dynamic Programming
 - Gemini-powered mock interview prompts with staged interview behavior
 - Mock interview flow that asks for approach first, then time complexity, then space complexity, then optimizations
 - Gradual hint system that avoids revealing the full solution too early
 - Full solution reveal only when the user explicitly asks for it
-- Striver SDE Sheet inspired dataset with 20+ DSA interview questions
-- Loading indicator, reset chat action, mobile responsiveness, and API error handling
+- Striver SDE Sheet inspired dataset with 30+ DSA interview questions
+- Loading indicator, reset chat action, timer functionality, and API error handling
 
 ## Tech Stack
 
@@ -106,5 +116,5 @@ http://localhost:3000
 
 ## Notes
 
-- The mock interview route is implemented in [/Users/priyanka/Documents/Projects/ThinklyLab/app/api/chat/route.ts](./app/api/chat/route.ts).
+<!-- - The mock interview route is implemented in [/Users/priyanka/Documents/Projects/ThinklyLab/app/api/chat/route.ts](./app/api/chat/route.ts). -->
 - Gemini responses are generated with `GEMINI_MODEL` or default to `gemini-2.5-flash`.
