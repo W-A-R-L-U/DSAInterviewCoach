@@ -2,6 +2,10 @@
 
 DSA Interview Coach is a full-stack AI chatbot web application for practicing Data Structures and Algorithms interview questions through a mock interview experience. It uses Next.js App Router, TypeScript, Tailwind CSS, and the Gemini API to create a ChatGPT-style interview workflow around Striver SDE Sheet inspired questions.
 
+## Live Demo
+
+[Try the DSA Interview Coach](https://dsa-interview-coach.vercel.app)
+
 ## Why I Picked This Topic
 
 I chose this topic because I personally faced challenges while preparing for DSA interviews. During my preparation, I realized that having someone available to take mock interviews anytime would have been extremely helpful for practicing how to think aloud, explain approaches, and handle follow-up questions. DSA interview preparation is a common challenge for many students and developers. While most platforms provide lists of problems and solutions, they rarely replicate the experience of a real interview. This project aims to bridge that gap by creating a conversational AI experience where users can practice step by step in an interview-like environment.
@@ -27,11 +31,10 @@ I chose this topic because I personally faced challenges while preparing for DSA
 ## Tech Stack
 
 - Next.js (App Router)
-- React
 - TypeScript
 - Tailwind CSS
 - Gemini API via `@google/generative-ai`
-- Vercel-ready deployment structure
+
 
 ## Dataset Source
 
