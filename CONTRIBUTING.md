@@ -127,15 +127,7 @@ When reporting a bug, please include:
 
 ---
 
-## 🧑‍💻 Coding Standards & Best Practices
 
- 
-- Follow existing folder structure  
-- Write clean, readable, and modular code  
-- Keep components small and reusable   
-- Add comments only where necessary 
-
----
 
 ## 💡 Feature Requests
 
