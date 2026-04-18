@@ -122,13 +122,7 @@ http://localhost:3000
 <!-- - The mock interview route is implemented in [/Users/priyanka/Documents/Projects/ThinklyLab/app/api/chat/route.ts](./app/api/chat/route.ts). -->
 - Gemini responses are generated with `GEMINI_MODEL` or default to `gemini-2.5-flash`.
 
-## License
 
-This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
+## Contributing
 
-The MIT License is a permissive open-source license that allows you to:
-- Use the software for any purpose
-- Copy, modify, and distribute the software
-- Include the software in proprietary applications
-
-The only requirement is that you include a copy of the license and copyright notice in any distributed copies.
+Please read [CONTRIBUTING.md](./CONTRIBUTING.md) before contributing.
