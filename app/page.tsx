@@ -68,8 +68,80 @@ export default function HomePage() {
   const [interviewState, setInterviewState] = useState<InterviewState | null>(null);
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
   const [interviewExpired, setInterviewExpired] = useState(false);
+  const [hasHydrated, setHasHydrated] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const expiryAnnouncedRef = useRef(false);
+
+  // Persistence: Load state from localStorage on mount
+  useEffect(() => {
+    try {
+      const savedMessages = localStorage.getItem("dsa_chat_messages");
+      const savedMode = localStorage.getItem("dsa_chat_mode") as ChatMode | null;
+      const savedTopic = localStorage.getItem("dsa_chat_topic");
+      const savedQuestion = localStorage.getItem("dsa_chat_question");
+      const savedState = localStorage.getItem("dsa_chat_state");
+      const savedExpired = localStorage.getItem("dsa_chat_expired");
+      const savedEndTime = localStorage.getItem("dsa_chat_end_time");
+
+      if (savedMessages) setMessages(JSON.parse(savedMessages));
+      if (savedMode) setMode(savedMode);
+      if (savedTopic && savedTopic !== "undefined") setSelectedTopic(savedTopic);
+      if (savedQuestion) setCurrentQuestion(JSON.parse(savedQuestion));
+      if (savedState) setInterviewState(JSON.parse(savedState));
+      
+      const isExpired = savedExpired === "true";
+      setInterviewExpired(isExpired);
+      if (isExpired) expiryAnnouncedRef.current = true;
+
+      if (savedEndTime && savedMode === "mockInterview") {
+        const endTime = parseInt(savedEndTime, 10);
+        const now = Date.now();
+        if (now >= endTime) {
+          setInterviewExpired(true);
+          expiryAnnouncedRef.current = true;
+          setTimeRemaining(0);
+        } else {
+          setTimeRemaining(Math.floor((endTime - now) / 1000));
+        }
+      }
+    } catch (e) {
+      console.error("Failed to load session:", e);
+    } finally {
+      setHasHydrated(true);
+    }
+  }, []);
+
+  // Persistence: Save state to localStorage on changes (only after hydration)
+  useEffect(() => {
+    if (!hasHydrated) return;
+
+    if (messages.length > 0) {
+      localStorage.setItem("dsa_chat_messages", JSON.stringify(messages));
+    } else {
+      localStorage.removeItem("dsa_chat_messages");
+    }
+
+    localStorage.setItem("dsa_chat_mode", mode);
+    localStorage.setItem("dsa_chat_expired", String(interviewExpired));
+
+    if (mode === "mockInterview" && selectedTopic) {
+      localStorage.setItem("dsa_chat_topic", selectedTopic);
+    } else if (mode === "normalChat") {
+      localStorage.removeItem("dsa_chat_topic");
+    }
+
+    if (currentQuestion) {
+      localStorage.setItem("dsa_chat_question", JSON.stringify(currentQuestion));
+    } else {
+      localStorage.removeItem("dsa_chat_question");
+    }
+
+    if (interviewState) {
+      localStorage.setItem("dsa_chat_state", JSON.stringify(interviewState));
+    } else {
+      localStorage.removeItem("dsa_chat_state");
+    }
+  }, [messages, mode, selectedTopic, currentQuestion, interviewState, interviewExpired, hasHydrated]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({
@@ -218,6 +290,8 @@ export default function HomePage() {
     setSelectedTopic(nextTopic);
     setCurrentQuestion(null);
     setInterviewExpired(false);
+    const endTime = Date.now() + MOCK_INTERVIEW_DURATION_SECONDS * 1000;
+    localStorage.setItem("dsa_chat_end_time", String(endTime));
     setTimeRemaining(MOCK_INTERVIEW_DURATION_SECONDS);
     setInterviewState({
       stage: "approach",
@@ -238,6 +312,7 @@ export default function HomePage() {
     setInterviewState(null);
     setTimeRemaining(null);
     setInterviewExpired(false);
+    localStorage.clear();
   }
 
   const emptyState = (
