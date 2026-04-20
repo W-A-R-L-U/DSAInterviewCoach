@@ -1,8 +1,11 @@
-# DSA Interview Coach
-
-> 🚀 **This project is officially participating in NSOC**
+> 🚀 **This project is officially participating in NSoC**
 
 [![NSOC](NSoC.png)](https://nsoc.in/)
+
+# DSA Interview Coach
+
+
+
 
 DSA Interview Coach is a full-stack AI chatbot web application for practicing Data Structures and Algorithms interview questions through a mock interview experience. It uses Next.js App Router, TypeScript, Tailwind CSS, and the Gemini API to create a ChatGPT-style interview workflow around Striver SDE Sheet inspired questions.
 
