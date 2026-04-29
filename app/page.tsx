@@ -372,35 +372,31 @@ export default function HomePage() {
   );
 
   return (
-    <main>
-      <div className="flex min-h-screen flex-col">
-        <div className="flex min-h-screen flex-col">
-          {messages.length > 0 ? (
-            <Header
-              onReset={handleReset}
-              disabled={isLoading}
-              timer={mode === "mockInterview" && timeRemaining !== null ? formatRemainingTime(timeRemaining) : null}
-              timerWarning={timeRemaining !== null && timeRemaining <= MOCK_INTERVIEW_WARNING_SECONDS}
-              showReset={messages.length > 0}
+    <main className="min-h-[calc(100svh-var(--navbar-height))] flex flex-col">
+      {messages.length > 0 ? (
+        <Header
+          onReset={handleReset}
+          disabled={isLoading}
+          timer={mode === "mockInterview" && timeRemaining !== null ? formatRemainingTime(timeRemaining) : null}
+          timerWarning={timeRemaining !== null && timeRemaining <= MOCK_INTERVIEW_WARNING_SECONDS}
+          showReset={messages.length > 0}
+        />
+      ) : null}
+
+      {messages.length === 0 ? emptyState : chatView}
+
+      {messages.length > 0 ? (
+        <div className="sticky bottom-0 border-t border-[var(--surface-border)] bg-[var(--surface-bg)] px-4 py-4 backdrop-blur sm:px-6">
+          <div className="mx-auto max-w-2xl">
+            <ChatInput
+              value={input}
+              onChange={setInput}
+              onSubmit={() => void sendMessage(input)}
+              disabled={isLoading || interviewExpired}
             />
-          ) : null}
-
-          {messages.length === 0 ? emptyState : chatView}
-
-          {messages.length > 0 ? (
-            <div className="sticky bottom-0 border-t border-[var(--surface-border)] bg-[var(--surface-bg)] px-4 py-4 backdrop-blur sm:px-6">
-              <div className="mx-auto max-w-2xl">
-                <ChatInput
-                  value={input}
-                  onChange={setInput}
-                  onSubmit={() => void sendMessage(input)}
-                  disabled={isLoading || interviewExpired}
-                />
-              </div>
-            </div>
-          ) : null}
+          </div>
         </div>
-      </div>
+      ) : null}
     </main>
   );
 }

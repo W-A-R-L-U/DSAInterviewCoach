@@ -4,6 +4,7 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useAuth } from "@/components/AuthProvider";
 
 type UserInput = {
   email: string;
@@ -12,6 +13,7 @@ type UserInput = {
 
 export default function LoginPage() {
   const router = useRouter();
+  const { isAuthenticated, isLoading, refreshAuth } = useAuth();
   const [user, setUser] = React.useState<UserInput>({
     email: "",
     password: ""
@@ -36,9 +38,9 @@ export default function LoginPage() {
 
     try {
       setLoading(true);
-      const response = await axios.post("/api/user/login", user);
-      console.log("Login success", response.data);
+      await axios.post("/api/user/login", user);
       toast.success("Logged in successfully");
+      await refreshAuth();
       router.push("/user/profile");
     } catch (err: any) {
       console.error("Login failed", err?.response || err);
@@ -56,9 +58,27 @@ export default function LoginPage() {
     setButtonDisabled(!enabled);
   }, [user]);
 
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      router.push("/");
+    }
+  }, [isLoading, isAuthenticated, router]);
+
+  if (isLoading) {
+    return (
+      <main className="min-h-[calc(100svh-var(--navbar-height))] flex items-center justify-center px-6">
+        <p className="text-sm text-slate-500">Checking your session...</p>
+      </main>
+    );
+  }
+
+  if (isAuthenticated) {
+    return null;
+  }
+
   return (
-    <main className="min-h-screen flex flex-col">
-      <div className="flex-1 flex items-center justify-center overflow-hidden px-6 py-16 relative">
+    <main className="min-h-[calc(100svh-var(--navbar-height))] flex flex-col">
+      <div className="flex-1 flex items-center justify-center overflow-hidden px-6 py-6 sm:py-8 relative">
         <div className="pointer-events-none absolute left-1/2 top-1/2 h-[24rem] w-[24rem] -translate-x-[140%] -translate-y-[58%] rounded-full bg-indigo-200/35 blur-3xl" />
         <div className="pointer-events-none absolute left-1/2 top-1/2 h-[18rem] w-[18rem] translate-x-[85%] -translate-y-[12%] rounded-full bg-sky-200/45 blur-3xl" />
 
