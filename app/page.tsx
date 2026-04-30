@@ -244,7 +244,7 @@ export default function HomePage() {
           selectedTopic: nextTopic,
           currentQuestion,
           interviewState,
-          history: [...chatHistory, { role: "user", content: trimmedMessage }]
+          history: [...chatHistory]
         })
       });
 
