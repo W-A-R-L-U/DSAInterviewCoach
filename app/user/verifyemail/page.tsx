@@ -21,8 +21,7 @@ export default function VerifyEmail() {
             console.log("verify response", res.data);
             setVerified(true);
             toast.success("Email verified. You can now log in.");
-            // optionally redirect after a short delay
-            setTimeout(() => router.push("/login"), 1200);
+            setTimeout(() => router.push("/user/login"), 500);
         } catch (err: any) {
             console.error("verify failed", err?.response || err);
             const msg = err?.response?.data?.error || err?.message || "Verification failed";
@@ -69,7 +68,7 @@ export default function VerifyEmail() {
                             <div className="text-5xl mb-4">✅</div>
                             <p className="text-lg font-semibold text-green-600 mb-2">Email Verified!</p>
                             <p className="text-sm text-slate-600 mb-6">Your email has been successfully verified.</p>
-                            <Link href="/login" className="inline-block w-full bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-medium py-3 rounded-lg transition-all duration-200">
+                            <Link href="/user/login" className="inline-block w-full bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-medium py-3 rounded-lg transition-all duration-200">
                                 Proceed to Login
                             </Link>
                         </div>

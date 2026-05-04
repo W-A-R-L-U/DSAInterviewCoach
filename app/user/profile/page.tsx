@@ -19,6 +19,9 @@ export default function ProfilePage() {
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
+    const [passwordForm, setPasswordForm] = useState({ currentPassword: "", newPassword: "", confirmPassword: "" });
+    const [passwordVisible, setPasswordVisible] = useState({ currentPassword: false, newPassword: false, confirmPassword: false });
+    const [passwordLoading, setPasswordLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const getUserDetails = async () => {
@@ -65,31 +68,47 @@ export default function ProfilePage() {
         }
     };
 
-    const statusItems = [
-        {
-            label: "Email status",
-            value: profile?.isVerified ? "Verified" : "Pending verification",
-            tone: profile?.isVerified ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-amber-50 text-amber-700 border-amber-200"
-        },
-        {
-            label: "Account role",
-            value: profile?.isAdmin ? "Administrator" : "Learner",
-            tone: profile?.isAdmin ? "bg-sky-50 text-sky-700 border-sky-200" : "bg-slate-50 text-slate-700 border-slate-200"
+    const handleChangePassword = async () => {
+        if (passwordForm.newPassword.length < 6) {
+            toast.error("New password must be at least 6 characters");
+            return;
         }
-    ];
+
+        if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+            toast.error("New password and confirm new password does not match");
+            return;
+        }
+
+        try {
+            setPasswordLoading(true);
+            const response = await axios.post("/api/user/changepassword", {
+                currentPassword: passwordForm.currentPassword,
+                newPassword: passwordForm.newPassword
+            });
+            const message = response.data.message;
+            if(response.data.success){
+                toast.success(message);
+                setPasswordForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
+            }else{
+                toast.error(message);
+            }   
+        } catch (err: any) {
+            const message = "Unable to change password please try again later";
+            toast.error(message);
+        } finally {
+            setPasswordLoading(false);
+        }
+    };
+
 
     return (
         <main className="min-h-screen px-6 py-10 sm:py-14">
             <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
                 <div className="flex flex-wrap items-center justify-between gap-4">
                     <div>
-                        <p className="text-sm font-medium uppercase tracking-[0.22em] text-indigo-600">Account</p>
                         <h1 className="mt-2 text-3xl font-bold tracking-[-0.06em] text-slate-900 sm:text-4xl">
                             Your profile
                         </h1>
-                        <p className="mt-2 max-w-2xl text-sm text-slate-600">
-                            Review your account details, check verification status, and manage your session.
-                        </p>
                     </div>
 
                     <div className="flex items-center gap-3">
@@ -99,14 +118,6 @@ export default function ProfilePage() {
                         >
                             Back to coach
                         </Link>
-                        <button
-                            type="button"
-                            onClick={() => void getUserDetails()}
-                            disabled={loading || actionLoading}
-                            className="inline-flex h-11 items-center justify-center rounded-full border border-indigo-200 bg-indigo-50 px-5 text-sm font-medium text-indigo-700 transition hover:border-indigo-300 hover:bg-indigo-100 disabled:cursor-not-allowed disabled:opacity-60"
-                        >
-                            Refresh
-                        </button>
                     </div>
                 </div>
 
@@ -126,16 +137,6 @@ export default function ProfilePage() {
                                 </div>
                             </div>
 
-                            <div className="flex flex-wrap gap-2">
-                                {statusItems.map((item) => (
-                                    <div
-                                        key={item.label}
-                                        className={["rounded-full border px-4 py-2 text-sm font-medium", item.tone].join(" ")}
-                                    >
-                                        {item.value}
-                                    </div>
-                                ))}
-                            </div>
                         </div>
 
                         <div className="mt-8 grid gap-4 sm:grid-cols-2">
@@ -149,36 +150,96 @@ export default function ProfilePage() {
                                 <p className="mt-2 break-all text-lg font-semibold text-slate-900">{profile?.email || "—"}</p>
                             </div>
 
-                            <div className="rounded-2xl border border-slate-200 bg-white/80 p-4">
-                                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Verification</p>
-                                <p className="mt-2 text-lg font-semibold text-slate-900">
-                                    {profile?.isVerified ? "Verified" : "Pending"}
-                                </p>
-                            </div>
-
-                            <div className="rounded-2xl border border-slate-200 bg-white/80 p-4">
-                                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Role</p>
-                                <p className="mt-2 text-lg font-semibold text-slate-900">
-                                    {profile?.isAdmin ? "Administrator" : "Learner"}
-                                </p>
-                            </div>
                         </div>
 
-                        <div className="mt-8 flex flex-wrap gap-3">
-                            <Link
-                                href="/"
-                                className="inline-flex h-11 items-center justify-center rounded-full bg-indigo-600 px-5 text-sm font-medium text-white transition hover:bg-indigo-700"
-                            >
-                                Start practicing
-                            </Link>
-                            <button
-                                type="button"
-                                onClick={() => void handleLogout()}
-                                disabled={actionLoading}
-                                className="inline-flex h-11 items-center justify-center rounded-full border border-rose-200 bg-rose-50 px-5 text-sm font-medium text-rose-700 transition hover:border-rose-300 hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-60"
-                            >
-                                {actionLoading ? "Signing out..." : "Sign out"}
-                            </button>
+                    </div>
+
+                    <div className="rounded-[32px] border border-[var(--shell-border)] bg-[var(--shell-bg)] p-6 shadow-[0_28px_80px_rgba(99,102,241,0.1)] backdrop-blur-xl sm:p-8">
+                        <div className="max-w-2xl">
+                            <p className="text-sm font-medium uppercase tracking-[0.22em] text-indigo-600">Security</p>
+                            <h2 className="mt-2 text-2xl font-semibold tracking-[-0.05em] text-slate-900">Change password</h2>
+                        </div>
+
+                        <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                            <div>
+                                <label htmlFor="currentPassword" className="mb-2 block text-sm font-medium text-slate-700">
+                                    Current password
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        id="currentPassword"
+                                        type={passwordVisible.currentPassword ? "text" : "password"}
+                                        value={passwordForm.currentPassword}
+                                        onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
+                                        className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 pr-20 text-sm text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-colors"
+                                        placeholder="Enter current password"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setPasswordVisible({ ...passwordVisible, currentPassword: !passwordVisible.currentPassword })}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full px-2 py-1 text-xs font-medium text-indigo-600 transition hover:bg-indigo-50 hover:text-indigo-700"
+                                    >
+                                        {passwordVisible.currentPassword ? "Hide" : "View"}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label htmlFor="newPassword" className="mb-2 block text-sm font-medium text-slate-700">
+                                    New password
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        id="newPassword"
+                                        type={passwordVisible.newPassword ? "text" : "password"}
+                                        value={passwordForm.newPassword}
+                                        onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
+                                        className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 pr-20 text-sm text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-colors"
+                                        placeholder="Enter new password"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setPasswordVisible({ ...passwordVisible, newPassword: !passwordVisible.newPassword })}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full px-2 py-1 text-xs font-medium text-indigo-600 transition hover:bg-indigo-50 hover:text-indigo-700"
+                                    >
+                                        {passwordVisible.newPassword ? "Hide" : "View"}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label htmlFor="confirmPassword" className="mb-2 block text-sm font-medium text-slate-700">
+                                    Confirm new password
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        id="confirmPassword"
+                                        type={passwordVisible.confirmPassword ? "text" : "password"}
+                                        value={passwordForm.confirmPassword}
+                                        onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
+                                        className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 pr-20 text-sm text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-colors"
+                                        placeholder="Confirm new password"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setPasswordVisible({ ...passwordVisible, confirmPassword: !passwordVisible.confirmPassword })}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full px-2 py-1 text-xs font-medium text-indigo-600 transition hover:bg-indigo-50 hover:text-indigo-700"
+                                    >
+                                        {passwordVisible.confirmPassword ? "Hide" : "View"}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="flex items-end">
+                                <button
+                                    type="button"
+                                    onClick={() => void handleChangePassword()}
+                                    disabled={passwordLoading}
+                                    className="inline-flex h-12 w-full items-center justify-center rounded-lg bg-indigo-600 px-5 text-sm font-medium text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+                                >
+                                    {passwordLoading ? "Updating..." : "Change password"}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </section>

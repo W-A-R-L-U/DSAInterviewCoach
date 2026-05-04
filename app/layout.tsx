@@ -3,6 +3,7 @@ import type { CSSProperties, ReactNode } from "react";
 import "./globals.css";
 import { AuthProvider } from "@/components/AuthProvider";
 import { Navbar } from "@/components/Navbar";
+import { AppToaster } from "@/components/AppToaster";
 
 export const metadata: Metadata = {
   title: "DSA Interview Coach",
@@ -16,7 +17,7 @@ export default function RootLayout({
   children: ReactNode;
 }>) {
   return (
-    <html lang="en" style={{overflow:"hidden"}}>
+    <html lang="en">
       <body
         className="min-h-screen flex flex-col"
         style={{
@@ -26,6 +27,7 @@ export default function RootLayout({
         <AuthProvider>
           <Navbar />
           {children}
+          <AppToaster />
         </AuthProvider>
       </body>
     </html>

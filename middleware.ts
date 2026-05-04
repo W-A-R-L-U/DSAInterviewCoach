@@ -5,7 +5,7 @@ export function middleware(request: NextRequest) {
     const path = request.nextUrl.pathname;
     const token = request.cookies.get("token")?.value || "";
 
-    const authPages = ["/user/login", "/user/signup", "/user/verifyemail"];
+    const authPages = ["/user/login", "/user/signup", "/user/verifyemail", "/user/forgotpassword","/user/resetpassword"];
     const isAuthPage = authPages.includes(path);
     const isProtectedPage = path === "/user/profile";
     
@@ -21,5 +21,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-    matcher: ["/user/login", "/user/signup", "/user/verifyemail", "/user/profile"],
+    matcher: ["/user/login", "/user/signup", "/user/verifyemail", "/user/forgotpassword", "/user/resetpassword", "/user/profile"],
 };
