@@ -5,6 +5,7 @@ import { ChatInput } from "@/components/ChatInput";
 import { ChatMessage } from "@/components/ChatMessage";
 import { Header } from "@/components/Header";
 import { SuggestionButtons } from "@/components/SuggestionButtons";
+import { LandingPage } from "@/components/LandingPage";
 import { type StriverQuestion } from "@/data/striverQuestions";
 
 type ChatRole = "user" | "assistant" | "system";
@@ -71,7 +72,7 @@ export default function HomePage() {
   const [hasHydrated, setHasHydrated] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const expiryAnnouncedRef = useRef(false);
-  const timerRef = useRef<number | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Persistence: Load state from localStorage on mount
   useEffect(() => {
@@ -155,13 +156,13 @@ export default function HomePage() {
     if (mode !== "mockInterview" || timeRemaining === null || interviewExpired) {
       // Clean up interval if interview is not active
       if (timerRef.current) {
-        window.clearInterval(timerRef.current);
+        clearInterval(timerRef.current);
         timerRef.current = null;
       }
       return;
     }
 
-    timerRef.current = window.setInterval(() => {
+    timerRef.current = setInterval(() => {
       setTimeRemaining((previous) => {
         if (previous === null) {
           return previous;
@@ -169,7 +170,7 @@ export default function HomePage() {
 
         if (previous <= 1) {
           if (timerRef.current) {
-            window.clearInterval(timerRef.current);
+            clearInterval(timerRef.current);
             timerRef.current = null;
           }
           return 0;
@@ -181,7 +182,7 @@ export default function HomePage() {
 
     return () => {
       if (timerRef.current) {
-        window.clearInterval(timerRef.current);
+        clearInterval(timerRef.current);
         timerRef.current = null;
       }
     };
@@ -339,78 +340,75 @@ export default function HomePage() {
     localStorage.clear();
   }
 
-  const emptyState = (
-    <section className="relative flex flex-1 items-center justify-center overflow-hidden px-6 py-16">
-      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[24rem] w-[24rem] -translate-x-[140%] -translate-y-[58%] rounded-full bg-indigo-200/35 blur-3xl" />
-      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[18rem] w-[18rem] translate-x-[85%] -translate-y-[12%] rounded-full bg-sky-200/45 blur-3xl" />
-
-      <div className="relative flex w-full max-w-3xl flex-col items-center gap-7 rounded-[32px] border border-[var(--shell-border)] bg-[var(--shell-bg)] px-8 py-12 text-center shadow-[0_28px_80px_rgba(99,102,241,0.14)] backdrop-blur-xl sm:px-12 sm:py-14">
-        <div className="text-4xl leading-none">🧠</div>
-        <h2 className="text-[3rem] font-bold tracking-[-0.06em] text-slate-900 sm:text-[3.2rem]">
-          DSA Interview Coach
-        </h2>
-        <p className="max-w-2xl text-[1rem] leading-8 text-slate-500">
-          Practice Data Structures and Algorithms interviews with an AI interviewer
-          trained on Striver SDE Sheet questions.
-        </p>
-        <SuggestionButtons onSelect={handleSuggestion} disabled={isLoading} />
-      </div>
-    </section>
-  );
 
   const chatView = (
     <section className="flex flex-1 flex-col overflow-hidden bg-transparent">
-      <div
-        ref={scrollRef}
-        className="flex-1 overflow-y-auto px-4 py-8 scroll-smooth sm:px-6"
-      >
-        <div className="mx-auto max-w-3xl space-y-6">
-          {messages.map((message) => (
-            <ChatMessage
-              key={message.id}
-              role={message.role}
-              content={message.content}
-            />
-          ))}
+        <div
+          ref={scrollRef}
+          className="flex-1 overflow-y-auto px-4 py-8 scroll-smooth sm:px-6"
+        >
+          <div className="mx-auto max-w-3xl space-y-6">
+            {messages.map((message) => (
+              <ChatMessage
+                key={message.id}
+                role={message.role}
+                content={message.content}
+              />
+            ))}
 
-          {isLoading ? (
-            <ChatMessage role="assistant" content="" loading />
-          ) : null}
+            {isLoading ? (
+              <ChatMessage role="assistant" content="" loading />
+            ) : null}
+
+            {/* Spacer to ensure the last message is not hidden by the sticky footer */}
+            <div className="h-8" />
+          </div>
         </div>
-      </div>
     </section>
   );
 
-  return (
-    <main>
-      <div className="flex min-h-screen flex-col">
-        <div className="flex min-h-screen flex-col">
-          {messages.length > 0 ? (
-            <Header
-              onReset={handleReset}
-              disabled={isLoading}
-              timer={mode === "mockInterview" && timeRemaining !== null ? formatRemainingTime(timeRemaining) : null}
-              timerWarning={timeRemaining !== null && timeRemaining <= MOCK_INTERVIEW_WARNING_SECONDS}
-              showReset={messages.length > 0}
+ return (
+  <main>
+    <div className="flex min-h-screen flex-col">
+      {messages.length > 0 ? (
+        <Header
+          onReset={handleReset}
+          disabled={isLoading}
+          timer={
+            mode === "mockInterview" && timeRemaining !== null
+              ? formatRemainingTime(timeRemaining)
+              : null
+          }
+          timerWarning={
+            timeRemaining !== null &&
+            timeRemaining <= MOCK_INTERVIEW_WARNING_SECONDS
+          }
+          showReset={messages.length > 0}
+        />
+      ) : null}
+
+      {messages.length === 0 ? (
+        <LandingPage
+          onSelectSuggestion={handleSuggestion}
+          isLoading={isLoading}
+        />
+      ) : (
+        chatView
+      )}
+
+      {messages.length > 0 ? (
+        <div className="sticky bottom-0 border-t border-[var(--surface-border)] bg-[var(--surface-bg)] px-4 py-4 backdrop-blur sm:px-6">
+          <div className="mx-auto max-w-2xl">
+            <ChatInput
+              value={input}
+              onChange={setInput}
+              onSubmit={() => void sendMessage(input)}
+              disabled={isLoading || interviewExpired}
             />
-          ) : null}
-
-          {messages.length === 0 ? emptyState : chatView}
-
-          {messages.length > 0 ? (
-            <div className="sticky bottom-0 border-t border-[var(--surface-border)] bg-[var(--surface-bg)] px-4 py-4 backdrop-blur sm:px-6">
-              <div className="mx-auto max-w-2xl">
-                <ChatInput
-                  value={input}
-                  onChange={setInput}
-                  onSubmit={() => void sendMessage(input)}
-                  disabled={isLoading || interviewExpired}
-                />
-              </div>
-            </div>
-          ) : null}
+          </div>
         </div>
-      </div>
-    </main>
+      ) : null}
+    </div>
+  </main>
   );
 }
