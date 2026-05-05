@@ -71,7 +71,7 @@ export default function HomePage() {
   const [hasHydrated, setHasHydrated] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const expiryAnnouncedRef = useRef(false);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<number | null>(null);
 
   // Persistence: Load state from localStorage on mount
   useEffect(() => {
@@ -222,6 +222,16 @@ export default function HomePage() {
       return;
     }
 
+    const nextHistory = [
+      ...messages
+        .filter((existing) => existing.role !== "system")
+        .map((existing) => ({
+          role: existing.role === "user" ? ("user" as const) : ("assistant" as const),
+          content: existing.content
+        })),
+      { role: "user" as const, content: trimmedMessage }
+    ];
+
     const userMessage: UiMessage = {
       id: makeId(),
       role: "user",
@@ -244,7 +254,7 @@ export default function HomePage() {
           selectedTopic: nextTopic,
           currentQuestion,
           interviewState,
-          history: [...chatHistory]
+          history: nextHistory
         })
       });
 
