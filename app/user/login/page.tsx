@@ -3,9 +3,12 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { useAuth } from "@/components/AuthProvider";
 import { signIn } from 'next-auth/react';
 import type { SignInResponse } from 'next-auth/react';
+import googleIcon from "@/assets/google.svg";
+import githubIcon from "@/assets/github.svg";
 
 type UserInput = {
     email: string;
@@ -186,16 +189,18 @@ export default function LoginPage() {
                             type="button"
                             onClick={() => onOAuthLogin('google')}
                             disabled={loading}
-                            className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
+                            className="flex w-full items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
                         >
+                            <Image src={googleIcon} alt="Google" className="h-5 w-5" width={20} height={20} />
                             Continue with Google
                         </button>
                         <button
                             type="button"
                             onClick={() => onOAuthLogin('github')}
                             disabled={loading}
-                            className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
+                            className="flex w-full items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
                         >
+                            <Image src={githubIcon} alt="GitHub" className="h-5 w-5" width={20} height={20} />
                             Continue with GitHub
                         </button>
                     </div>
