@@ -160,17 +160,16 @@ npm run dev
 ```text
 http://localhost:3000
 ```
-## For oAuth
-- Google
-    1. Open Google Cloud Console → APIs & Services → OAuth consent screen — configure (External, add your email, save).
-    2. APIs & Services → Credentials → Create Credentials → OAuth client ID → Application type: Web application.
-    3. Set Authorized redirect URI: https://dsa-interview-coach.vercel.app/api/auth/callback/google
-    4. Create and copy the Client ID → paste into GOOGLE_CLIENT_ID and Client secret → paste into GOOGLE_CLIENT_SECRET.
-  - Github
-    1. GitHub → Settings → Developer settings → OAuth Apps → New OAuth App.
-    2. Homepage URL: https://dsa-interview-coach.vercel.app
-    3. Authorization callback URL: https://dsa-interview-coach.vercel.app/api/auth/callback/github
-    4. Register app, then copy Client ID → GITHUB_CLIENT_ID and generate/copy Client Secret → GITHUB_CLIENT_SECRET.
+## Google OAuth Setup 
+  1. Open Google Cloud Console → APIs & Services → OAuth consent screen — configure (External, add your email, save).
+  2. APIs & Services → Credentials → Create Credentials → OAuth client ID → Application type: Web application.
+  3. Set Authorized redirect URI: https://dsa-interview-coach.vercel.app/api/auth/callback/google
+  4. Create and copy the Client ID → paste into GOOGLE_CLIENT_ID and Client secret → paste into GOOGLE_CLIENT_SECRET.
+## Github OAuth Setup 
+  1. GitHub → Settings → Developer settings → OAuth Apps → New OAuth App.
+  2. Homepage URL: https://dsa-interview-coach.vercel.app
+  3. Authorization callback URL: https://dsa-interview-coach.vercel.app/api/auth/callback/github
+  4. Register app, then copy Client ID → GITHUB_CLIENT_ID and generate/copy Client Secret → GITHUB_CLIENT_SECRET.
 
 ## Environment Variables
 
