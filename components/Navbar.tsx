@@ -30,6 +30,12 @@ export function Navbar() {
   const menuRef = useRef<HTMLDivElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const { isAuthenticated, isLoading, clearAuth } = useAuth();
+  const isLandingPage = pathname === '/';
+
+  const handleStartNow = () => {
+    window.dispatchEvent(new CustomEvent('landingpage:start-interview'));
+    setMenuOpen(false);
+  };
 
   useEffect(() => {
     const handleDocumentClick = (event: MouseEvent) => {
@@ -81,6 +87,28 @@ export function Navbar() {
             <p className="text-xs text-slate-500">Practice. Improve. Repeat.</p>
           </div>
         </Link>
+
+        {/* LANDING PAGE SECTION LINKS */}
+        {isLandingPage && (
+          <nav className="hidden flex-1 items-center justify-end gap-2 md:flex">
+            <a href="#challenge" className="px-3 py-2 text-sm font-medium text-slate-600 transition hover:text-indigo-600">Problem</a>
+            <a href="#curriculum" className="px-3 py-2 text-sm font-medium text-slate-600 transition hover:text-indigo-600">Curriculum</a>
+            <a href="#specs" className="px-3 py-2 text-sm font-medium text-slate-600 transition hover:text-indigo-600">Specs</a>
+          </nav>
+        )}
+
+        {/* START NOW BUTTON */}
+        {isLandingPage && (
+          <button 
+              onClick={handleStartNow}
+              className="group flex items-center gap-2 rounded-full bg-slate-900 px-5 py-2 text-[12px] font-bold text-white transition hover:bg-indigo-600 active:scale-95"
+            >
+              Start Now
+              <svg className="h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </button>
+        )}
 
         <div className="relative" ref={menuRef}>
           <button
