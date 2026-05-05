@@ -1,13 +1,28 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import type { SessionWithId } from '@/helpers/sessionTypes';
 
 export async function POST() {
-  const response = NextResponse.json({ message: "Logged out successfully" }, { status: 200 });
-
-  response.cookies.set("token", "", {
-    httpOnly: true,
-    expires: new Date(0),
-    path: "/"
-  });
-
-  return response;
+    try {
+        const session = (await getServerSession(authOptions)) as SessionWithId;
+        
+        if (!session || !session.user) {
+            return NextResponse.json(
+                { error: 'Not authenticated', success: false },
+                { status: 401 }
+            );
+        }
+        
+        return NextResponse.json(
+            { message: 'Logged out successfully', success: true },
+            { status: 200 }
+        );
+    } catch (error) {
+        const message = error instanceof Error ? error.message : 'Logout failed';
+        return NextResponse.json(
+            { error: message, success: false },
+            { status: 500 }
+        );
+    }
 }

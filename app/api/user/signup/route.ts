@@ -49,7 +49,8 @@ export async function POST(request: NextRequest) {
             { message: "Account created successfully - please verify your email.", success: true },
             { status: 200 },
         );
-    } catch (error: any) {
-        return NextResponse.json({ message: "Something went wrong. Please try again later.", success : false }, { status: 500 });
+    } catch (error) {
+        const message = error instanceof Error ? error.message : "Something went wrong. Please try again later.";
+        return NextResponse.json({ message, success : false }, { status: 500 });
     }
 }

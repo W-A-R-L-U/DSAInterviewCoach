@@ -4,6 +4,8 @@ export interface IUser {
     username: string
     email: string
     password: string
+    authProvider?: string
+    providerAccountId?: string
     isVerified: boolean
     isAdmin: boolean
     forgotPasswordToken?: string
@@ -27,6 +29,8 @@ const userSchema = new mongoose.Schema<IUser>({
         type: String,
         required: [true, 'Pleae provide a password'],
     },
+    authProvider: String,
+    providerAccountId: String,
     isVerified: {
         type: Boolean,
         default: false,

@@ -22,8 +22,9 @@ export async function POST(request : NextRequest){
 
         await user.save()
 
-        return NextResponse.json({message: 'User verified sucessfully',success : true},{status:200})
-    }catch(error: any){
-        return NextResponse.json({error:error.message},{status:500})
+        return NextResponse.json({message: 'User verified successfully',success : true},{status:200})
+    }catch(error){
+        const message = error instanceof Error ? error.message : 'Verification failed';
+        return NextResponse.json({error:message},{status:500})
     }
 }

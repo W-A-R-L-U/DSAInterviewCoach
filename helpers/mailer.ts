@@ -14,7 +14,7 @@ export const emailSender = async ({ email, emailType, userId }: any) => {
                 verifyToken: hashedToken,
                 verifyTokenExpiry: Date.now() + 3600000,
             });
-        } else if (emailType == "RESET") {
+        } else if (emailType === "RESET") {
             await User.findByIdAndUpdate(userId, {
                 forgotPasswordToken: hashedToken,
                 forgotPasswordExpiry: Date.now() + 3600000,
@@ -99,10 +99,11 @@ export const emailSender = async ({ email, emailType, userId }: any) => {
                 `,
         };
 
-        const mailRespone = await transporter.sendMail(mailOptions);
-        console.log(`Email sent ${emailType}:`, mailRespone.response);
-        return mailRespone;
-    } catch (error: any) {
-        throw new Error(error.message);
+        const mailResponse = await transporter.sendMail(mailOptions);
+        console.log(`Email sent ${emailType}:`, mailResponse.response);
+        return mailResponse;
+    } catch (error) {
+        const message = error instanceof Error ? error.message : 'Failed to send email';
+        throw new Error(message);
     }
 };

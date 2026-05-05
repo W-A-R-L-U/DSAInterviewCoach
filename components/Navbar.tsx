@@ -1,6 +1,7 @@
-'use client';
+ 'use client';
 
-import axios from "axios";
+import { signOut } from 'next-auth/react';
+import axios from 'axios';
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -54,13 +55,14 @@ export function Navbar() {
 
   const handleLogout = async () => {
     try {
-      await axios.post("/api/user/logout");
-      toast.success("Logged out successfully");
+      await axios.post('/api/user/logout');
+      await signOut({ redirect: false });
+      toast.success('Logged out successfully');
       setMenuOpen(false);
       clearAuth();
-      router.push("/user/login");
+      router.push('/user/login');
     } catch (err: any) {
-      const message = err?.response?.data?.error || err?.message || "Unable to log out";
+      const message = err?.response?.data?.error || err?.message || 'Unable to log out';
       toast.error(message);
     }
   };

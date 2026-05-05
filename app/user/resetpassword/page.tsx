@@ -97,7 +97,7 @@ export default function ResetPasswordPage() {
                                     value={passwordForm.confirmPassword}
                                     onChange={(e) => setPasswordForm({...passwordForm, confirmPassword : e.target.value})}
                                     type={passwordVisible.confirmPassword ? "text" : "password"}
-                                    placeholder="Confirm new passqord"
+                                    placeholder="Confirm new password"
                                     className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 pr-12 text-sm text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-colors"
                                 />
                                 <button

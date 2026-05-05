@@ -5,6 +5,8 @@ import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/components/AuthProvider";
+import type { SignInResponse } from 'next-auth/react';
+import { signIn } from 'next-auth/react';
 
 type UserInput = {
     email: string;
@@ -51,6 +53,20 @@ export default function SignupPage() {
         } catch (err: any) {
             const message = err?.response?.data?.message || "Signup failed, Please try later.";
             toast.error(message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const onOAuthSignup = async (provider: "google" | "github") => {
+        try {
+            setLoading(true);
+            const result = (await signIn(provider, { callbackUrl: "/" })) as SignInResponse | undefined;
+            if (result?.error) {
+                toast.error(result.error);
+            }
+        } catch (err: any) {
+            toast.error(err?.message || "OAuth sign-up failed");
         } finally {
             setLoading(false);
         }
@@ -166,6 +182,30 @@ export default function SignupPage() {
                             {loading ? "Creating account..." : "Sign Up"}
                         </button>
                     </form>
+
+                    <div className="mt-6 space-y-3">
+                        <div className="flex items-center gap-3 text-xs uppercase tracking-[0.22em] text-slate-400">
+                            <span className="h-px flex-1 bg-slate-200" />
+                            <span>Or continue with</span>
+                            <span className="h-px flex-1 bg-slate-200" />
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => onOAuthSignup("google")}
+                            disabled={loading}
+                            className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
+                        >
+                            Sign up with Google
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => onOAuthSignup("github")}
+                            disabled={loading}
+                            className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
+                        >
+                            Sign up with GitHub
+                        </button>
+                    </div>
 
                     <div className="mt-6 pt-6 border-t border-slate-200">
                         <p className="text-center text-sm text-slate-600">

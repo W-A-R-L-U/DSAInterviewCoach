@@ -54,19 +54,6 @@ export default function ProfilePage() {
             .toUpperCase();
     }, [profile]);
 
-    const handleLogout = async () => {
-        try {
-            setActionLoading(true);
-            await axios.post("/api/user/logout");
-            toast.success("Logged out successfully");
-            router.push("/user/login");
-        } catch (err: any) {
-            const message = err?.response?.data?.error || err?.message || "Unable to log out";
-            toast.error(message);
-        } finally {
-            setActionLoading(false);
-        }
-    };
 
     const handleChangePassword = async () => {
         if (passwordForm.newPassword.length < 6) {

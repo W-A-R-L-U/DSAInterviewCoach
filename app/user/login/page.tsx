@@ -1,14 +1,22 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/components/AuthProvider";
+import { signIn } from 'next-auth/react';
+import type { SignInResponse } from 'next-auth/react';
 
 type UserInput = {
     email: string;
     password: string;
+};
+
+type CredentialsSignInResponse = {
+  error?: string | null;
+  status?: number;
+  ok?: boolean;
+  url?: string | null;
 };
 
 export default function LoginPage() {
@@ -39,17 +47,32 @@ export default function LoginPage() {
 
         try {
             setLoading(true);
-            const response = await axios.post("/api/user/login", user);
-            if (response.data.success) {
-                toast.success(response.data.message);
-                router.push("/");
+            const res = (await signIn('credentials', { redirect: false, email: user.email, password: user.password })) as CredentialsSignInResponse | undefined
+            if (res && !res.error && res.ok) {
+                toast.success('Logged in successfully');
+                await refreshAuth();
+                router.push('/');
             } else {
-                toast.error(response.data.message);
+                const message = res?.error || 'Login failed';
+                toast.error(message);
             }
-            await refreshAuth();
         } catch (err: any) {
-            const message = err?.response?.data?.message || "Login failed";
+            const message = err?.message || 'Login failed';
             toast.error(message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const onOAuthLogin = async (provider: 'google' | 'github') => {
+        try {
+            setLoading(true);
+            const result = (await signIn(provider, { callbackUrl: '/' })) as SignInResponse | undefined
+            if (result?.error) {
+                toast.error(result.error);
+            }
+        } catch (err: any) {
+            toast.error(err?.message || 'OAuth sign-in failed');
         } finally {
             setLoading(false);
         }
@@ -157,6 +180,25 @@ export default function LoginPage() {
                             {loading ? "Signing in..." : "Sign In"}
                         </button>
                     </form>
+
+                    <div className="mt-6 space-y-3">
+                        <button
+                            type="button"
+                            onClick={() => onOAuthLogin('google')}
+                            disabled={loading}
+                            className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
+                        >
+                            Continue with Google
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => onOAuthLogin('github')}
+                            disabled={loading}
+                            className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
+                        >
+                            Continue with GitHub
+                        </button>
+                    </div>
 
                     <div className="mt-6 pt-6 border-t border-slate-200">
                         <div className="space-y-3 text-center text-sm text-slate-600">

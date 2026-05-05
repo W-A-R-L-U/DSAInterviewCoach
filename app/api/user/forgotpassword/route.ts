@@ -23,7 +23,8 @@ export async function POST(request: NextRequest) {
         await emailSender({ email: user.email, emailType: 'RESET', userId: user._id })
 
         return NextResponse.json({ message: 'Password reset link sent successfully', success: true }, { status: 200 })
-    } catch (error: any) {
-        return NextResponse.json({ error: "Please try again later" }, { status: 500 })
+    } catch (error) {
+        const message = error instanceof Error ? error.message : "Please try again later";
+        return NextResponse.json({ error: message }, { status: 500 })
     }
 }

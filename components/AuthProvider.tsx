@@ -1,7 +1,7 @@
 'use client';
 
-import axios from "axios";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { SessionProvider, useSession, signOut, getSession } from 'next-auth/react';
+import { createContext, useContext, useMemo } from 'react';
 
 type AuthUser = {
   _id?: string;
@@ -12,7 +12,7 @@ type AuthUser = {
 };
 
 type AuthContextValue = {
-  user: AuthUser | null;
+  user: any | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   refreshAuth: () => Promise<void>;
@@ -21,50 +21,44 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+function InnerProvider({ children }: { children: React.ReactNode }) {
+  const { data: session, status } = useSession();
 
   const refreshAuth = async () => {
-    try {
-      setIsLoading(true);
-      const response = await axios.post("/api/user/profile");
-      setUser(response.data.data ?? null);
-    } catch {
-      setUser(null);
-    } finally {
-      setIsLoading(false);
-    }
+    await getSession();
   };
 
   const clearAuth = () => {
-    setUser(null);
-    setIsLoading(false);
+    void signOut({ redirect: false });
   };
-
-  useEffect(() => {
-    void refreshAuth();
-  }, []);
 
   const value = useMemo<AuthContextValue>(
     () => ({
-      user,
-      isAuthenticated: Boolean(user),
-      isLoading,
+      user: session?.user ?? null,
+      isAuthenticated: !!session,
+      isLoading: status === 'loading',
       refreshAuth,
       clearAuth
     }),
-    [user, isLoading]
+    [session, status]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <SessionProvider>
+      <InnerProvider>{children}</InnerProvider>
+    </SessionProvider>
+  );
 }
 
 export function useAuth() {
   const context = useContext(AuthContext);
 
   if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error('useAuth must be used within an AuthProvider');
   }
 
   return context;
