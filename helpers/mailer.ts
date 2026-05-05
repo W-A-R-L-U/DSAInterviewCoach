@@ -32,7 +32,7 @@ export const emailSender = async ({ email, emailType, userId }: any) => {
             emailType === "VERIFY" ? "/user/verifyemail" : "/user/resetpassword";
         const actionText =
             emailType === "VERIFY" ? "Verify Email" : "Reset Password";
-        const actionUrl = `${process.env.DOMAIN}${path}?token=${rawToken}`;
+        const actionUrl = `${process.env.NEXTAUTH_URL}${path}?token=${rawToken}`;
         const message =
             emailType === "VERIFY"
                 ? "Please confirm your email address by clicking the button below."
