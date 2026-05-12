@@ -2,7 +2,7 @@ import { connect } from '@/db/db'
 import User from '@/models/UserModel'
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { authOptions } from '@/lib/auth'
 import type { SessionWithId } from '@/helpers/sessionTypes'
 
 connect()
