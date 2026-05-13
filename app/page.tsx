@@ -223,6 +223,16 @@ export default function HomePage() {
       return;
     }
 
+    const nextHistory = [
+      ...messages
+        .filter((existing) => existing.role !== "system")
+        .map((existing) => ({
+          role: existing.role === "user" ? ("user" as const) : ("assistant" as const),
+          content: existing.content
+        })),
+      { role: "user" as const, content: trimmedMessage }
+    ];
+
     const userMessage: UiMessage = {
       id: makeId(),
       role: "user",
@@ -245,7 +255,7 @@ export default function HomePage() {
           selectedTopic: nextTopic,
           currentQuestion,
           interviewState,
-          history: [...chatHistory, { role: "user", content: trimmedMessage }]
+          history: nextHistory
         })
       });
 

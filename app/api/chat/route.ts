@@ -141,7 +141,15 @@ Specific behavior:
 `;
 }
 
-function buildNormalChatPrompt(message: string, selectedTopic?: string) {
+function buildNormalChatPrompt(
+  message: string,
+  selectedTopic: string | undefined,
+  history: Array<{ role: "user" | "assistant"; content: string }>
+) {
+  const conversation = history
+    .map((entry) => `${entry.role.toUpperCase()}: ${entry.content}`)
+    .join("\n");
+
   return `
 You are DSA Interview Coach, a chatbot trained around Striver SDE Sheet style interview preparation.
 
@@ -156,7 +164,10 @@ Rules:
 - If the user asks for an example, give one concise example and use a fenced code block for structured input when helpful.
 - Prefer labeling examples as Input and Output, each followed by a fenced code block.
 
-User message:
+Conversation so far:
+${conversation || "No previous conversation."}
+
+Latest user message:
 ${message}
 `;
 }
@@ -219,6 +230,19 @@ export async function POST(request: Request) {
       history = []
     } = body;
 
+    const normalizedHistory = (() => {
+      const lastEntry = history.at(-1);
+      if (
+        lastEntry &&
+        lastEntry.role === "user" &&
+        lastEntry.content.trim() === message.trim()
+      ) {
+        return history.slice(0, -1);
+      }
+
+      return history;
+    })();
+
     if (!message || !mode) {
       return NextResponse.json(
         { error: "Message and mode are required." },
@@ -246,11 +270,11 @@ export async function POST(request: Request) {
         ? buildMockInterviewPrompt(
             selectedQuestion,
             message,
-            history,
+            normalizedHistory,
             activeInterviewState,
             intent
           )
-        : buildNormalChatPrompt(message, selectedTopic);
+        : buildNormalChatPrompt(message, selectedTopic, normalizedHistory);
 
     const result = await model.generateContent(prompt);
     const aiText = sanitizeAiReply(result.response.text());
