@@ -1,0 +1,35 @@
+name: "Auto-label NSoC'26 on issue opened"
+on:
+  issues:
+    types: [opened]
+permissions:
+  issues: write
+jobs:
+  add-nsoc-label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ensure and add NSoC'26 label
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const label = "NSoC'26";
+            const { owner, repo } = context.repo;
+            // Ensure the label exists; create it if missing
+            try {
+              await github.rest.issues.getLabel({ owner, repo, name: label });
+            } catch (err) {
+              await github.rest.issues.createLabel({
+                owner,
+                repo,
+                name: label,
+                color: '0e8a16',
+                description: 'Label for NSoC 2026 issues'
+              }).catch(() => {});
+            }
+            // Add the label to the newly opened issue
+            await github.rest.issues.addLabels({
+              owner,
+              repo,
+              issue_number: context.payload.issue.number,
+              labels: [label]
+            });
