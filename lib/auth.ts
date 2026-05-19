@@ -9,7 +9,6 @@ import crypto from 'crypto'
 import type { JWT } from 'next-auth/jwt'
 import type { SessionWithId } from '@/helpers/sessionTypes'
 
-connect()
 
 type UserWithId = NextAuthUser & {
   id?: string
@@ -28,6 +27,7 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
+        await connect();
         if (!credentials?.email || !credentials?.password) return null
         const user = await User.findOne({ email: credentials.email })
         if (!user) return null
@@ -74,6 +74,7 @@ export const authOptions: NextAuthOptions = {
     },
     async signIn({ user, account, profile }: { user: NextAuthUser; account: Account | null; profile?: Profile }) {
       try {
+        await connect();
         if (account && account.provider !== 'credentials') {
           const oauthUser = user as UserWithId
           const email = user.email
