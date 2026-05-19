@@ -28,11 +28,17 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         await connect();
-        if (!credentials?.email || !credentials?.password) return null
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error('Email and password are required')
+        }
         const user = await User.findOne({ email: credentials.email })
-        if (!user) return null
+        if (!user) {
+          throw new Error('Invalid email or password')
+        }
         const valid = await bcrypt.compare(credentials.password, user.password)
-        if (!valid) return null
+        if (!valid) {
+          throw new Error('Invalid email or password')
+        }
         if (!user.isVerified) {
           throw new Error('Please verify your email before signing in. Check your inbox for the verification link.')
         }
